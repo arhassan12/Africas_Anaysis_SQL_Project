@@ -1,0 +1,12 @@
+-- The following query counts the number of incidences of every type of event
+
+SELECT 
+	event_type, 
+	COUNT(event_type)
+FROM 
+	africa_conflict.africa_event 
+GROUP BY 
+	event_type
+ORDER BY 
+	count DESC
+LIMIT 10
