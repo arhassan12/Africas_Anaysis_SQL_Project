@@ -1,0 +1,43 @@
+BEGIN;
+
+CREATE SCHEMA IF NOT EXISTS Africa_conflict;
+
+CREATE TABLE IF NOT EXISTS  Africa_conflict.Africa_event
+(
+
+data_id INT,
+event_id_no_cnty INT,
+event_date TIMESTAMP,
+year INT,
+event_type VARCHAR(80),
+actor1 VARCHAR(200),
+inter1 INT,
+actor2 VARCHAR(200),
+inter2 INT,
+interaction INT,
+region VARCHAR(30),
+country VARCHAR(50),
+location VARCHAR(60),
+notes VARCHAR(3000),
+fatalities INT,
+iso3 VARCHAR(8)
+);
+
+COPY Africa_conflict.Africa_event FROM '/tmp/Africa_event.csv'
+WITH DELIMITER ',' CSV HEADER;
+
+COMMIT
+
+-- This query gets the top 10 of countries according to the number of conflicts
+
+SELECT 
+	DISTINCT(country), 
+	COUNT(*) AS count 
+FROM 
+	africa_conflict.africa_event 
+GROUP BY 
+	country 
+ORDER BY 
+	count DESC
+LIMIT 10
+
