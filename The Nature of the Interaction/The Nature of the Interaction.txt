@@ -1,0 +1,18 @@
+-- The following query compares the kind of conflict in relation to the interactions between actors
+
+SELECT 
+	country, 
+	event_type, 
+	interaction, 
+	COUNT(event_type)
+FROM 
+	africas_conflicts.africa_event 
+WHERE 
+	("interaction"::int) > 10 
+GROUP BY 
+	country, 
+	event_type, 
+	interaction
+ORDER BY 
+	COUNT(event_type) DESC
+limit 10
