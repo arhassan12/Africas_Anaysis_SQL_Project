@@ -1,6 +1,7 @@
 -- The following query shows the top 10 of factions that take part in conflicts 
 
-SELECT year, actor1, actor2, COUNT(event_id_no_cnty)
+SELECT actor1, actor2, COUNT(event_id_no_cnty)
 	OVER (ORDER BY year ROWS BETWEEN 1 PRECEDING AND 100 FOLLOWING) 
-        FROM africa_conflict.africa_event WHERE country = 'Somalia’ 
-        LIMIT 1000
+       	 	FROM africa_conflict.africa_event 
+			WHERE country = 'Somalia'
+        			LIMIT 1000
