@@ -1,0 +1,18 @@
+-- The following query is to combine the result of subqueries using self-join statement 
+
+SELECT * 
+FROM africa_conflict.africa_event 
+INNER JOIN
+(
+    SELECT 
+          event_type, SUM(fatalities) as grave
+    FROM
+          africa_conflict.africa_event 
+    WHERE 
+          country = 'Somalia'
+    GROUP BY
+          event_type
+
+) foo
+ON africa_conflict.africa_event.event_type = Foo.event_type
+
