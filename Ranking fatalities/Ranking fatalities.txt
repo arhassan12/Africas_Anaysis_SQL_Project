@@ -1,0 +1,15 @@
+-- The following query compares fatalities based on the event type and ranks from low to highest. 
+
+SELECT event_type,
+       fatalities,
+       CASE
+          WHEN fatalities = 0 THEN 'No fatalities'
+          WHEN fatalities > 0 AND fatalities <= 100 THEN 'Low'
+          WHEN fatalities > 50 AND fatalities <= 500 THEN 'Medium'
+          WHEN fatalities > 150 AND fatalities <= 5000 THEN 'High'
+          WHEN fatalities > 500 AND fatalities <= 10000 THEN 'Very High'
+          WHEN fatalities > 1000 AND fatalities <= 65000 THEN 'Highest'
+          WHEN fatalities > 2000 THEN 'Luxury'
+          ELSE 'IGNORE'
+       END as fatalities
+FROM africa_conflict.africa_event
