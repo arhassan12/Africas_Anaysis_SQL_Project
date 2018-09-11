@@ -1,0 +1,135 @@
+-- Making my table and loading my data
+
+BEGIN;
+
+CREATE SCHEMA IF NOT EXISTS Africa_conflict;
+
+CREATE TABLE IF NOT EXISTS  Africa_conflict.Africa_event
+(
+
+data_id INT,
+event_id_no_cnty INT,
+event_date TIMESTAMP,
+year INT,
+event_type VARCHAR(80),
+actor1 VARCHAR(200),
+inter1 INT,
+actor2 VARCHAR(200),
+inter2 INT,
+interaction INT,
+region VARCHAR(30),
+country VARCHAR(50),
+location VARCHAR(60),
+notes VARCHAR(3000),
+fatalities INT,
+iso3 VARCHAR(8)
+);
+
+COPY Africa_conflict.Africa_event FROM '/tmp/Africa_event.csv'
+WITH DELIMITER ',' CSV HEADER;
+
+COMMIT
+
+-- This query gets the top 10 of countries according to the number of conflicts
+
+SELECT 
+	DISTINCT(country), 
+	COUNT(*) AS count 
+FROM 
+	africa_conflict.africa_event 
+GROUP BY 
+	country 
+ORDER BY 
+	count DESC
+LIMIT 10
+
+-- The following query counts the number of incidences of every type of event
+
+SELECT 
+	event_type, 
+	COUNT(event_type)
+FROM 
+	africa_conflict.africa_event 
+GROUP BY 
+	event_type
+ORDER BY 
+	count DESC
+LIMIT 10
+
+-- The following query looks at the most common event type 
+
+SELECT 
+	event_type,
+	COUNT(event_id_no_cnty)
+FROM 
+	africa_conflict.africa_event 
+GROUP BY
+	event_type
+HAVING
+	COUNT(event_id_no_cnty) > 50
+ORDER BY 
+	COUNT(event_id_no_cnty) DESC
+LIMIT 10 
+
+-- The following query compares the kind of conflict in relation to the interactions between actors
+
+SELECT 
+	country, 
+	event_type, 
+	interaction, 
+	COUNT(event_type)
+FROM 
+	africas_conflicts.africa_event 
+WHERE 
+	("interaction"::int) > 10 
+GROUP BY 
+	country, 
+	event_type, 
+	interaction
+ORDER BY 
+	COUNT(event_type) DESC
+limit 10
+
+-- The following query compares fatalities based on the event type and ranks from low to highest. 
+
+SELECT event_type,
+       fatalities,
+       CASE
+          WHEN fatalities = 0 THEN 'No fatalities'
+          WHEN fatalities > 0 AND fatalities <= 100 THEN 'Low'
+          WHEN fatalities > 50 AND fatalities <= 500 THEN 'Medium'
+          WHEN fatalities > 150 AND fatalities <= 5000 THEN 'High'
+          WHEN fatalities > 500 AND fatalities <= 10000 THEN 'Very High'
+          WHEN fatalities > 1000 AND fatalities <= 65000 THEN 'Highest'
+          WHEN fatalities > 2000 THEN 'Luxury'
+          ELSE 'IGNORE'
+       END as fatalities
+FROM africa_conflict.africa_event
+
+-- The following query shows the top 10 of factions that take part in conflicts 
+
+SELECT actor1, actor2, COUNT(event_id_no_cnty)
+	OVER (ORDER BY year ROWS BETWEEN 1 PRECEDING AND 100 FOLLOWING) 
+        	FROM africa_conflict.africa_event 
+			WHERE country = 'Somalia'
+        			LIMIT 1000
+
+-- The following query is to combine the result of subqueries using self-join statement 
+
+SELECT * 
+FROM africa_conflict.africa_event 
+INNER JOIN
+(
+    SELECT 
+          event_type, SUM(fatalities) as grave
+    FROM
+          africa_conflict.africa_event 
+    WHERE 
+          country = 'Somalia'
+    GROUP BY
+          event_type
+
+) foo
+ON africa_conflict.africa_event.event_type = Foo.event_type
+
+
